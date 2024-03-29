@@ -8,3 +8,4 @@ pypdf
 docx2txt
 chromadb
 streamlit
+google-generativeai
