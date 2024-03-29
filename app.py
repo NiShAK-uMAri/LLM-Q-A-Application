@@ -69,7 +69,7 @@ if __name__ == "__main__":
     with st.sidebar:
         api_key = st.text_input('Google API Key :key::', type='password')
         if api_key:
-            os.environ['GOOGLE_API_KEY'] == api_key
+            os.environ['GOOGLE_API_KEY'] = api_key
 
         uploaded_file = st.file_uploader('Upload a File :spiral_note_pad:', type=['pdf', 'txt', 'docx'])
         chunk_size = st.number_input('Chunk Size', min_value=100, max_value=2048, value=512, on_change=clear_history)
