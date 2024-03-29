@@ -9,3 +9,4 @@ docx2txt
 chromadb
 streamlit
 google-generativeai
+langchain-google-genai
