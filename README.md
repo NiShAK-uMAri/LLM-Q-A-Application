@@ -1,5 +1,5 @@
 # LLM-Q&A-Application
-# 
+# https://llm-q-a-application.streamlit.app/
 
 The "LLM-Q&A-Application" application is an advanced question-answering (QA) tool crafted using Streamlit, Langchain, and Google's Generative API models. This innovative tool empowers users to upload textual documents and pose inquiries based on the document's content, leveraging RAG for precise and contextually relevant responses.
 
