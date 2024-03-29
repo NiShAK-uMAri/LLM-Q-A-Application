@@ -12,6 +12,16 @@ The "LLM-Q&A-Application" application is an advanced question-answering (QA) too
 
 ## Usage Guidelines
 
+### To run "Ask the Doc App" on your local machine, follow these steps:
+
+Clone the Repository: Clone this repository to your local machine using git clone.
+
+Install Dependencies:
+
+Ensure you have Python installed. Install required packages using pip install -r requirements.txt. Set Up Google Generative API Key: You must have an Google Generative API key to use this app. If you don't have one, you can obtain it from Googlegenerative's website.
+
+Run the Streamlit App:
+
 - Access the application through your web browser following the execution of the Streamlit command.
 
 - Utilize the file uploader feature to upload your .txt document seamlessly.
