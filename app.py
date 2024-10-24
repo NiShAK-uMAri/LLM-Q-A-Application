@@ -5,6 +5,7 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Chroma
+from langchain_core.vectorstores import InMemoryVectorStore
 #from langchain_community.document_loaders import PyPDFLoader
 import os
 
@@ -13,15 +14,15 @@ def load_document(file):
     name, extension = os.path.splitext(file)
 
     if extension == '.pdf':
-        from langchain.document_loaders import PyPDFLoader
+        from langchain_community.document_loaders import PyPDFLoader
         print(f'Loading {file}')
         loader = PyPDFLoader(file)
     elif extension == '.docx':
-        from langchain.document_loaders import Docx2txtLoader
+        from langchain_community.document_loaders import Docx2txtLoader
         print(f'Loading {file}')
         loader = Docx2txtLoader(file)
     elif extension == '.txt':
-        from langchain.document_loaders import TextLoader
+        from langchain_community.document_loaders import TextLoader
         loader = TextLoader(file)
     else:
         print('Document format is not supported!')
@@ -42,7 +43,8 @@ def chunk_data(data, chunk_size=256, chunk_overlap=20):
 def create_embeddings(chunks):
     contents = [chunk['content'] if isinstance(chunk, dict) else chunk for chunk in chunks]
     embeddings = GoogleGenerativeAIEmbeddings(model='models/embedding-001', dimensions=1536)
-    vector_store = Chroma.from_documents(contents, embeddings)
+    #vector_store = Chroma.from_documents(contents, embeddings)
+    vector_store = InMemoryVectorStore.from_documents(contents, embeddings)
     return vector_store
 
 def ask_and_get_answer(vector_store, q, k=3):
@@ -90,7 +92,7 @@ if __name__ == "__main__":
         add_data = st.button('Add Data', on_click=clear_history)
 
         if uploaded_file and add_data:
-            with st.spinner('Readding, Chinking and embedding file...:rocket:'):
+            with st.spinner('Reading, Chunking and embedding file...:rocket:'):
                 bytes_data = uploaded_file.read()
                 file_name = os.path.join('./',uploaded_file.name)
                 with open(file_name, 'wb') as f:
@@ -126,4 +128,3 @@ if __name__ == "__main__":
                     st.session_state.history = f'{value}, \n {"-"*100}, \n {st.session_state.history}'
                     h = st.session_state.history
                     st.text_area(label='chat History', value=h, key='history', height=400)
-
