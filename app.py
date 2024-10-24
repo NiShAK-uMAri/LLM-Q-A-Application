@@ -5,6 +5,7 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Chroma
+#from langchain_community.document_loaders import PyPDFLoader
 import os
 
 def load_document(file):
@@ -12,15 +13,15 @@ def load_document(file):
     name, extension = os.path.splitext(file)
 
     if extension == '.pdf':
-        from langchain_community.document_loaders import PyPDFLoader
+        from langchain.document_loaders import PyPDFLoader
         print(f'Loading {file}')
         loader = PyPDFLoader(file)
     elif extension == '.docx':
-        from langchain_community.document_loaders import Docx2txtLoader
+        from langchain.document_loaders import Docx2txtLoader
         print(f'Loading {file}')
         loader = Docx2txtLoader(file)
     elif extension == '.txt':
-        from langchain_community.document_loaders import TextLoader
+        from langchain.document_loaders import TextLoader
         loader = TextLoader(file)
     else:
         print('Document format is not supported!')
@@ -34,27 +35,35 @@ def chunk_data(data, chunk_size=256, chunk_overlap=20):
     from langchain.text_splitter import RecursiveCharacterTextSplitter
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     chunks = text_splitter.split_documents(data)
+    clean_chunks = [{'content': chunk} if isinstance(chunk, str) else chunk for chunk in chunks]
     return chunks
     
 
 def create_embeddings(chunks):
-
+    contents = [chunk['content'] if isinstance(chunk, dict) else chunk for chunk in chunks]
     embeddings = GoogleGenerativeAIEmbeddings(model='models/embedding-001', dimensions=1536)
-    vector_store = Chroma.from_documents(chunks, embeddings)
+    vector_store = Chroma.from_documents(contents, embeddings)
     return vector_store
 
 def ask_and_get_answer(vector_store, q, k=3):
-    from langchain.chains import RetrievalQA
+    #from langchain.chains import RetrievalQA
     from langchain_google_genai import ChatGoogleGenerativeAI
+    from langchain_core.prompts import PromptTemplate
+    from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 
-    llm = ChatGoogleGenerativeAI(model='gemini-pro', temperature=1, convert_system_message_to_human=True)
+    llm = ChatGoogleGenerativeAI(model='gemini-pro', temperature=0.4, convert_system_message_to_human=True)
 
     retriever = vector_store.as_retriever(search_type='similarity', search_kwargs={'k': k})
+    setup = RunnableParallel(context=retriever, question=RunnablePassthrough())
+    template = """Question: {q}
 
-    chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever)
-    
+    Answer: Let's think step by step."""
+    prompt = PromptTemplate.from_template(template)
+
+    #chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever)
+    chain = setup| prompt | llm
     answer = chain.invoke(q)
-    return answer
+    return answer.content 
 
 def clear_history():
     if 'history' in st.session_state:
@@ -106,7 +115,7 @@ if __name__ == "__main__":
 
                     answer = ask_and_get_answer(vector_store, q,k)
 
-                    st.text_area('LLM Answer:', value=answer['result'])
+                    st.text_area('LLM Answer:', value=answer)
         
 
 
@@ -117,3 +126,4 @@ if __name__ == "__main__":
                     st.session_state.history = f'{value}, \n {"-"*100}, \n {st.session_state.history}'
                     h = st.session_state.history
                     st.text_area(label='chat History', value=h, key='history', height=400)
+
