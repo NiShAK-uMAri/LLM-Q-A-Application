@@ -4,7 +4,7 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 import streamlit as st
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 import os
 
 def load_document(file):
@@ -12,15 +12,15 @@ def load_document(file):
     name, extension = os.path.splitext(file)
 
     if extension == '.pdf':
-        from langchain.document_loaders import PyPDFLoader
+        from langchain_community.document_loaders import PyPDFLoader
         print(f'Loading {file}')
         loader = PyPDFLoader(file)
     elif extension == '.docx':
-        from langchain.document_loaders import Docx2txtLoader
+        from langchain_community.document_loaders import Docx2txtLoader
         print(f'Loading {file}')
         loader = Docx2txtLoader(file)
     elif extension == '.txt':
-        from langchain.document_loaders import TextLoader
+        from langchain_community.document_loaders import TextLoader
         loader = TextLoader(file)
     else:
         print('Document format is not supported!')
