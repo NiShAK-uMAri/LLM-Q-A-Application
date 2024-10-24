@@ -12,5 +12,5 @@ streamlit
 google-generativeai
 langchain-google-genai
 chromadb
-pysqlite3-wheels
+pysqlite-binary
 protobuf==3.20.*
