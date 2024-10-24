@@ -1,6 +1,7 @@
 openai
 langchain
 langchain-community
+langchain-cli
 pinecone-client
 python-dotenv
 tiktoken
@@ -11,4 +12,5 @@ streamlit
 google-generativeai
 langchain-google-genai
 chromadb
+pysqlite3-wheels
 protobuf==3.20.*
