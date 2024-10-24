@@ -55,7 +55,7 @@ def ask_and_get_answer(vector_store, q, k=3):
 
     retriever = vector_store.as_retriever(search_type='similarity', search_kwargs={'k': k})
     setup = RunnableParallel(context=retriever, question=RunnablePassthrough())
-    template = """Question: {q}
+    template = """Question: {question}
 
     Answer: Let's think step by step."""
     prompt = PromptTemplate.from_template(template)
