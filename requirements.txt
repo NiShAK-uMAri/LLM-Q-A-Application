@@ -10,6 +10,6 @@ docx2txt
 streamlit
 google-generativeai
 langchain-google-genai
-pysqlite3-binary
+# pysqlite3-binary
 chromadb
 protobuf==3.20.*
